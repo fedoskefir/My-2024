@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Мой маршрут 2024</title>
+  <meta name="viewport" content="initial-scale=1.0">
+
+  <!-- Стили Leaflet -->
+  <link 
+    rel="stylesheet" 
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
+
+  <!-- Скрипт Leaflet -->
+  <script 
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+  </script>
+
+  <style>
+    /* Контейнер для карты: занимает почти весь экран */
+    #map {
+      height: 90vh;  /* 90% высоты окна */
+      width: 100vw;  /* 100% ширины окна */
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Общий стиль Leaflet-контейнера */
+    .leaflet-container {
+      font-family: "Open Sans", sans-serif;
+    }
+
+    /* Стили для всплывающих подсказок (Tooltips) */
+    .leaflet-tooltip.my-tooltip {
+      background-color: rgba(30, 30, 30, 0.75); 
+      color: #fff;
+      border-radius: 4px;
+      padding: 4px 8px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    /* Попап (по клику на маркер) — чуть светлее */
+    .leaflet-popup-content-wrapper {
+      background-color: #fafafa;
+      color: #333;
+      border-radius: 6px;
+    }
+    .leaflet-popup-tip {
+      background-color: #fafafa;
+    }
+  </style>
+</head>
+
+<body>
+
+<div id="map"></div>
+
+<script>
+  // 1. Инициализируем карту, ставим центр в Шэньчжэнь (примерно) и зум 4
+  var map = L.map('map').setView([22.5431, 114.0579], 4);
+
+  // 2. Подключаем плиточный слой CartoDB Voyager (стабильный и достаточно красивый)
+  L.tileLayer(
+    'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', 
+    {
+      attribution: '©OpenStreetMap, ©CartoDB',
+      subdomains: 'abcd',
+      maxZoom: 19
+    }
+  ).addTo(map);
+
+  // 3. Список городов (пример вашего путешествия)
+  var cities = [
+    { name: "Шэньчжэнь", coords: [22.5431, 114.0579] },
+    { name: "Москва", coords: [55.7558, 37.6176] },
+    { name: "Уфа", coords: [54.7348, 55.9579] },
+    { name: "Санкт-Петербург", coords: [59.9343, 30.3351] },
+    { name: "Калининград", coords: [54.7104, 20.4522] },
+    { name: "Краснодар", coords: [45.0448, 38.9760] },
+    { name: "Гуйлинь", coords: [25.2760, 110.2956] },
+    { name: "Мурманск", coords: [68.9585, 33.0827] },
+    { name: "Оленегорск", coords: [67.9398, 32.9283] },
+    { name: "Мончегорск", coords: [67.9382, 32.9750] },
+    { name: "Кандалакша", coords: [67.1569, 32.4142] },
+    { name: "Петропавловск-Камчатский", coords: [53.0161, 158.6517] },
+    { name: "Владивосток", coords: [43.1155, 131.8855] },
+    { name: "Гуанчжоу", coords: [23.131094, 113.258989] },
+    { name: "Зеленоградск", coords: [54.958322, 20.473216] },
+    { name: "Светлогорск", coords: [54.944218, 20.156075] },
+    { name: "Темрюк", coords: [45.282044, 37.365388] },
+    { name: "Сочи", coords: [43.5855, 39.7231] }
+  ];
+
+  // 4. Кастомная иконка для меток
+  var customIcon = L.icon({
+    iconUrl: 'https://cdn-icons-png.flaticon.com/512/684/684908.png', // Пример
+    iconSize:     [30, 30],
+    iconAnchor:   [15, 30],
+    popupAnchor:  [0, -30]
+  });
+
+  // 5. Добавляем метки (маркеры) c постоянными подписями
+  cities.forEach(function(city) {
+    L.marker(city.coords, { icon: customIcon })
+      .addTo(map)
+      .bindPopup("<b>" + city.name + "</b> — прекрасное место!")
+      .bindTooltip(city.name, {
+        permanent: true,
+        direction: "auto",
+        className: "my-tooltip"
+      });
+  });
+
+  // 6. Делаем так, чтобы все города поместились в видимую область
+  var allCoords = cities.map(function(c) { return c.coords; });
+  var bounds = L.latLngBounds(allCoords);
+  map.fitBounds(bounds, { padding: [50, 50] });
+
+</script>
+
+</body>
+</html>
